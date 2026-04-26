@@ -34,13 +34,11 @@ Teknologi yang Digunakan
 
 Cara Menjalankan Aplikasi
 
-1. Clone repository:
-git clone https://github.com/username/pica_app.git
-2. Masuk ke folder project:
+1. Masuk ke folder project:
 cd pica_app
-3. Install dependencies:
+2. Install dependencies:
 flutter pub get
-4. Jalankan aplikasi:
+3. Jalankan aplikasi:
 flutter run
 
 Screenshot Aplikasi
