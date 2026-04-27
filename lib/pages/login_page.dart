@@ -1,43 +1,47 @@
 import 'package:flutter/material.dart';
-import 'dashboard_page.dart'; // Import halaman dashboard
-import 'forgot_password_page.dart'; // Import halaman lupa password
 
 class LoginPage extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState(); // Menghubungkan widget dengan state
+  _LoginPageState createState() => _LoginPageState(); // Stateful karena ada state
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _formKey = GlobalKey<FormState>(); // Key untuk validasi form
-  bool isLoading = false; // State untuk loading (spinner)
+  final _formKey = GlobalKey<FormState>(); // Key validasi form
 
-  final nim = TextEditingController(); // Controller untuk mengambil input NIM
-  final password =
-      TextEditingController(); // Controller untuk mengambil input password
+  final emailController = TextEditingController(); // Controller email
+  final passwordController = TextEditingController(); // Controller password
+
+  bool isLoading = false; // State loading
+  bool isPasswordVisible = false; // Toggle password
+  String errorMessage = ""; // Error message
+
+  // Regex email
+  final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
   // Fungsi login
-  void login() async {
-    // Mengecek apakah form valid
+  void handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      setState(() => isLoading = true); // Mengaktifkan loading
+      setState(() {
+        isLoading = true; // Aktifkan loading
+      });
 
-      await Future.delayed(Duration(seconds: 2)); // Simulasi proses login (API)
+      await Future.delayed(Duration(seconds: 2)); // Simulasi API
 
-      setState(() => isLoading = false); // Mematikan loading
+      setState(() {
+        isLoading = false; // Matikan loading
+      });
 
-      // Validasi login sederhana (hardcode)
-      if (nim.text == "2401020057" && password.text == "123") {
-        Navigator.pushReplacement(
+      if (emailController.text == "admin@test.com" &&
+          passwordController.text == "Admin123") {
+        Navigator.pushNamed(
           context,
-          MaterialPageRoute(
-            builder: (_) => DashboardPage(),
-          ), // Pindah ke dashboard
+          '/dashboard',
+          arguments: emailController.text,
         );
       } else {
-        // Menampilkan pesan error jika login gagal
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text("NIM atau Password salah")));
+        ).showSnackBar(SnackBar(content: Text("Login gagal")));
       }
     }
   }
@@ -45,101 +49,162 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Background putih polos
-      appBar: AppBar(
-        title: Text("Login"), // Judul halaman
-        backgroundColor: Colors.deepPurple, // Warna appbar
-      ),
+      backgroundColor: Colors.white, // Background clean putih
+
       body: SafeArea(
-        // Menghindari area notch/status bar
         child: Center(
           child: SingleChildScrollView(
-            // Agar tidak overflow saat keyboard muncul
-            child: Container(
-              width: 300, // Membatasi lebar form agar tidak terlalu panjang
-              padding: EdgeInsets.all(20), // Jarak dalam container
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 25,
+              ), // Padding kiri kanan
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // ===== LOGO BULAT BESAR =====
-                  CircleAvatar(
-                    radius: 60, // Ukuran lingkaran luar (border)
-                    backgroundColor: Colors.deepPurple, // Warna border
-                    child: CircleAvatar(
-                      radius: 55, // Ukuran lingkaran dalam (gambar)
-                      backgroundImage: AssetImage(
-                        "assets/images/pica.jpg",
-                      ), // Mengambil gambar dari assets
-                    ),
-                  ),
+                  SizedBox(height: 40),
 
-                  SizedBox(height: 20), // Memberi jarak
-                  // ===== JUDUL APP =====
-                  Text(
-                    "PICA APP", // Nama aplikasi
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  // ===== LOGO BULAT =====
+                  CircleAvatar(
+                    radius: 50, // Ukuran besar biar jelas
+                    backgroundImage: AssetImage("assets/images/pica.jpg"),
                   ),
 
                   SizedBox(height: 20),
 
-                  // ===== FORM LOGIN =====
-                  Form(
-                    key: _formKey, // Menghubungkan form dengan key
-                    child: Column(
-                      children: [
-                        // Input NIM
-                        TextFormField(
-                          controller: nim, // Mengambil nilai dari input
-                          decoration: InputDecoration(
-                            labelText: "NIM", // Label input
-                            border: OutlineInputBorder(), // Border kotak
-                          ),
-                          validator: (value) => value!.isEmpty
-                              ? "NIM wajib diisi"
-                              : null, // Validasi jika kosong
-                        ),
+                  // ===== TITLE =====
+                  Text(
+                    "PICA APP",
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                  ),
 
-                        SizedBox(height: 15), // Jarak antar field
-                        // Input Password
-                        TextFormField(
-                          controller: password,
-                          obscureText: true, // Menyembunyikan teks password
-                          decoration: InputDecoration(
-                            labelText: "Password",
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) =>
-                              value!.isEmpty ? "Password wajib diisi" : null,
-                        ),
+                  SizedBox(height: 5),
 
-                        SizedBox(height: 20),
+                  Text(
+                    "Silakan login untuk melanjutkan",
+                    style: TextStyle(color: Colors.grey),
+                  ),
 
-                        // Menampilkan loading atau tombol login
-                        isLoading
-                            ? CircularProgressIndicator() // Spinner saat loading
-                            : SizedBox(
-                                width: double.infinity, // Tombol full lebar
-                                child: ElevatedButton(
-                                  onPressed: login, // Menjalankan fungsi login
-                                  child: Text("Login"),
-                                ),
-                              ),
+                  SizedBox(height: 30),
 
-                        // Tombol menuju halaman lupa password
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    ForgotPasswordPage(), // Navigasi ke halaman lupa password
-                              ),
-                            );
-                          },
-                          child: Text("Lupa Password?"),
+                  // ===== CARD FORM =====
+                  Container(
+                    padding: EdgeInsets.all(20), // Padding dalam card
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15), // Rounded
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12, // Shadow halus
+                          blurRadius: 10,
+                          offset: Offset(0, 5),
                         ),
                       ],
                     ),
+
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          // ===== EMAIL =====
+                          TextFormField(
+                            controller: emailController,
+                            decoration: InputDecoration(
+                              labelText: "Email",
+                              prefixIcon: Icon(Icons.email), // Icon kiri
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Email wajib diisi";
+                              } else if (!emailRegex.hasMatch(value)) {
+                                return "Format email tidak valid";
+                              }
+                              return null;
+                            },
+                          ),
+
+                          SizedBox(height: 15),
+
+                          // ===== PASSWORD =====
+                          TextFormField(
+                            controller: passwordController,
+                            obscureText: !isPasswordVisible,
+                            decoration: InputDecoration(
+                              labelText: "Password",
+                              prefixIcon: Icon(Icons.lock),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+
+                              // Toggle show/hide
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  isPasswordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    isPasswordVisible =
+                                        !isPasswordVisible; // Toggle
+                                  });
+                                },
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Password wajib diisi";
+                              } else if (value.length < 8) {
+                                return "Minimal 8 karakter";
+                              } else if (!RegExp(r'[A-Za-z]').hasMatch(value) ||
+                                  !RegExp(r'[0-9]').hasMatch(value)) {
+                                return "Harus huruf & angka";
+                              }
+                              return null;
+                            },
+                          ),
+
+                          SizedBox(height: 20),
+
+                          // ===== BUTTON LOGIN =====
+                          isLoading
+                              ? CircularProgressIndicator()
+                              : SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: handleLogin,
+                                    style: ElevatedButton.styleFrom(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 15,
+                                      ), // Tinggi tombol
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    child: Text("Login"),
+                                  ),
+                                ),
+
+                          SizedBox(height: 10),
+
+                          // ===== LUPA PASSWORD =====
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/forgot');
+                              },
+                              child: Text("Lupa Password?"),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
+
+                  SizedBox(height: 30),
                 ],
               ),
             ),

@@ -23,8 +23,8 @@ Tujuan Pengembangan
 Akun Login
 Gunakan akun berikut untuk login:
 
-NIM      : 2401020057
-Password : 123
+Email    : admin@test.com
+Password : Admin123
 
 Teknologi yang Digunakan
 
@@ -42,10 +42,9 @@ flutter pub get
 flutter run
 
 Screenshot Aplikasi
-![alt text](image.png)
-![alt text](image-1.png)
-![alt text](image-2.png)
-
+![alt text](image-3.png)
+![alt text](image-4.png)
+![alt text](image-5.png)
 
 
 

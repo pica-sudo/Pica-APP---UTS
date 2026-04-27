@@ -1,40 +1,75 @@
 import 'package:flutter/material.dart';
-import 'login_page.dart'; // Import login untuk kembali (logout)
 
 class DashboardPage extends StatelessWidget {
-  // Membuat data dummy
-  final List<String> data = List.generate(10, (i) => "Menu ${i + 1}");
-
   @override
   Widget build(BuildContext context) {
+    // Mengambil data user dari halaman login
+    final String userEmail =
+        ModalRoute.of(context)!.settings.arguments as String;
+
+    // Dummy data untuk ListView (minimal 10 item)
+    final List<String> items = List.generate(
+      10,
+      (index) => "Item ${index + 1}",
+    );
+
     return Scaffold(
-      backgroundColor: Colors.white, // Background putih
       appBar: AppBar(
-        title: Text("Dashboard"),
-        backgroundColor: Colors.deepPurple,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            // Logout kembali ke login
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => LoginPage()),
-            );
-          },
+        title: Text("Dashboard"), // Judul
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout), // Icon logout
+            onPressed: () {
+              // Logout dan kembali ke login (hapus semua stack)
+              Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+            },
+          ),
+        ],
+      ),
+
+      body: SafeArea(
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+
+            // ===== INFORMASI USER =====
+            Text(
+              "Selamat datang, $userEmail", // Menampilkan user login
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+
+            SizedBox(height: 20),
+
+            // ===== LISTVIEW =====
+            Expanded(
+              child: ListView.builder(
+                itemCount: items.length, // Jumlah item
+                itemBuilder: (context, index) {
+                  return Card(
+                    margin: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                    elevation: 5, // Shadow
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12), // Rounded
+                    ),
+                    child: ListTile(
+                      leading: Icon(Icons.list), // Icon item
+                      title: Text(items[index]), // Judul item
+                      subtitle: Text("Deskripsi ${items[index]}"), // Subtitle
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
-      body: ListView.builder(
-        itemCount: data.length, // Jumlah item
-        itemBuilder: (context, index) {
-          return Card(
-            margin: EdgeInsets.all(10), // Jarak antar card
-            child: ListTile(
-              leading: Icon(Icons.dashboard), // Icon kiri
-              title: Text(data[index]), // Judul
-              subtitle: Text("Deskripsi menu"), // Subjudul
-            ),
-          );
-        },
+
+      // ===== OPTIONAL (NILAI TAMBAH) =====
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+        ],
       ),
     );
   }
